@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Used by the starter config's "Replace config.yaml" action (admins only).
 # Reads the new config from $NEW_CONFIG, checks that OliveTin can load it,
-# keeps the old file as config.yaml.bak and swaps the new one in. OliveTin
-# notices the change and reloads by itself.
+# keeps the old file as config.yaml.bak and swaps the new one in atomically.
+# OliveTin notices the change and reloads by itself.
 set -euo pipefail
 CONFIG=/config/config.yaml
 if [ -z "${NEW_CONFIG:-}" ]; then echo "The new config is empty: nothing changed."; exit 1; fi
@@ -22,7 +22,10 @@ if ! grep -Eq '^authRequireGuestsToLogin:[[:space:]]*true' "$CHECK/config.yaml";
   exit 1
 fi
 cp "$CONFIG" "$CONFIG.bak"
-cat "$CHECK/config.yaml" > "$CONFIG"
+# Swap it in with a rename on the same volume: OliveTin's file watcher can read a
+# half-written file when the config is rewritten in place.
+cp "$CHECK/config.yaml" /config/.config.yaml.new
+mv -f /config/.config.yaml.new "$CONFIG"
 echo "config.yaml replaced (previous copy: config.yaml.bak). OliveTin reloads it now."
 echo "Syntax check report:"
 printf '%s\n' "$OUT" | grep -v "^Found config file\|^Config file not found" || true

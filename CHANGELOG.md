@@ -4,6 +4,11 @@ Each entry is one version of this Railway template. Breaking changes come first.
 Updates reach deployed projects as Railway's "update available" notice when a
 change is merged to `main`; you choose when to apply it.
 
+## 3000.22.0-3 (2026-11-23)
+
+- Fix: **Replace config.yaml** and **Restore previous config.yaml** now swap the file in with an atomic rename. Before, OliveTin could reload a half-written file and keep running the old actions until the next redeploy. Same OliveTin version (3000.22.0); nothing to do after applying the update.
+- Note for existing deploys: the starter `config.yaml` on your volume is never overwritten, so the *Restore previous config.yaml* action in it keeps its old command. To get the new one, copy the *Restore previous config.yaml* action from `config.default.yaml` in this repo into your config.
+
 ## 3000.22.0-2 (2026-11-23)
 
 - README only: Deploy on Railway button linking to the published template (`olivetin`). No change to the running app.

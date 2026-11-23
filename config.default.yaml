@@ -4,7 +4,10 @@
 # itself when it changes. Full reference: https://docs.olivetin.app
 #
 # Edit it from OliveTin itself (the "Replace config.yaml" action below),
-# or with `railway ssh` and an editor of your choice.
+# or with `railway ssh`. When editing by hand, write a new file and `mv` it
+# over config.yaml (or redeploy afterwards): an in-place rewrite can be read
+# half-written by OliveTin's reloader. A few settings (pageTitle, listen
+# address, removed keys) only change after a redeploy.
 
 # Railway sets PORT; OliveTin uses it in place of the port below.
 listenAddressSingleHTTPFrontend: 0.0.0.0:1337
@@ -88,7 +91,7 @@ actions:
   - title: Restore previous config.yaml
     id: restore-config
     icon: backup
-    shell: test -f /config/config.yaml.bak && cp /config/config.yaml.bak /config/config.yaml && echo "Restored config.yaml from config.yaml.bak" || echo "There is no config.yaml.bak yet"
+    shell: test -f /config/config.yaml.bak && cp /config/config.yaml.bak /config/.config.yaml.new && mv -f /config/.config.yaml.new /config/config.yaml && echo "Restored config.yaml from config.yaml.bak" || echo "There is no config.yaml.bak yet"
     onclick: execution-dialog
     arguments:
       - type: confirmation
