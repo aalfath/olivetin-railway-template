@@ -26,7 +26,9 @@ The start script hashes the password with argon2id (using OliveTin's own hashing
 `/config/config.yaml` is written once, on the first boot, and is never overwritten afterwards. OliveTin reloads it by itself when it changes. Two ways to edit it:
 
 1. **From OliveTin:** log in, open the *Settings* dashboard, run **Show config.yaml**, edit a copy, and paste the whole file into **Replace config.yaml**. The action checks the new file with `OliveTin -syntaxcheck`, refuses configs without `authRequireGuestsToLogin: true`, keeps the old file as `config.yaml.bak`, and swaps the new one in. **Restore previous config.yaml** brings the backup back.
-2. **From a terminal:** `railway ssh` into the service and edit `/config/config.yaml`.
+2. **From a terminal:** `railway ssh` into the service, write the new file next to it and `mv` it over `/config/config.yaml` (an editor that rewrites the file in place can make OliveTin reload a half-written file; redeploy if a change doesn't show).
+
+New and changed actions and dashboards apply at once. Removed top-level settings only go away after a redeploy.
 
 Commands run inside the OliveTin container as the unprivileged `olivetin` user. The image includes `bash`, `curl`, `jq`, `git`, `ssh`, `kubectl`, `apprise` and `python3`. To control other machines, use `ssh` or HTTP APIs from your actions; Railway has no Docker socket to mount. See the [OliveTin docs](https://docs.olivetin.app) for actions, arguments, dashboards, users, OAuth2 and API keys.
 
