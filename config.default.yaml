@@ -1,0 +1,106 @@
+# OliveTin starter config written by the Railway template on first boot.
+# This file lives on the Railway volume at /config/config.yaml and is never
+# overwritten by the template, so it is safe to edit. OliveTin reloads it by
+# itself when it changes. Full reference: https://docs.olivetin.app
+#
+# Edit it from OliveTin itself (the "Replace config.yaml" action below),
+# or with `railway ssh` and an editor of your choice.
+
+# Railway sets PORT; OliveTin uses it in place of the port below.
+listenAddressSingleHTTPFrontend: 0.0.0.0:1337
+logLevel: "INFO"
+pageTitle: "OliveTin"
+checkForUpdates: false
+
+# This OliveTin is on the public internet, so nobody can see or run anything
+# before logging in. The admin user's password is the OLIVETIN_ADMIN_PASSWORD
+# service variable; the start script hashes it on every boot.
+authRequireGuestsToLogin: true
+authLocalUsers:
+  enabled: true
+  users:
+    - username: ${{ OLIVETIN_ADMIN_USERNAME }}
+      usergroup: admins
+      password: ${{ OLIVETIN_ADMIN_PASSWORD_HASH }}
+
+accessControlLists:
+  - name: admins
+    matchUsergroups: [admins]
+    addToEveryAction: true
+    permissions:
+      view: true
+      exec: true
+      logs: true
+      kill: true
+    policy:
+      showDiagnostics: true
+      showLogList: true
+      showVersionNumber: true
+
+defaultPolicy:
+  showDiagnostics: false
+  showLogList: false
+  showVersionNumber: false
+
+# Keep action logs across redeploys (on the volume, pruned after 30 days).
+saveLogs:
+  resultsDirectory: /config/logs
+  outputDirectory: /config/logs
+
+actions:
+  - title: Check disk space
+    id: check-disk-space
+    icon: disk
+    shell: df -h /config
+    onclick: execution-dialog
+
+  - title: Check a website
+    id: check-website
+    icon: ping
+    exec: [curl, -sS, -o, /dev/null, -w, "HTTP %{http_code} in %{time_total}s\n", --max-time, "15", "{{ url }}"]
+    onclick: execution-dialog
+    arguments:
+      - name: url
+        title: URL
+        type: url
+        default: https://railway.com
+
+  - title: Show config.yaml
+    id: show-config
+    icon: logs
+    exec: [cat, /config/config.yaml]
+    onclick: execution-dialog-stdout-only
+
+  - title: Replace config.yaml
+    id: replace-config
+    icon: "&#9998;"
+    exec: [/usr/local/bin/olivetin-replace-config]
+    onclick: execution-dialog
+    timeout: 30
+    arguments:
+      - name: new_config
+        title: New config.yaml
+        type: raw_string_multiline
+        description: Paste the whole new config.yaml. It is checked before it replaces the old one, which is kept as config.yaml.bak.
+      - type: confirmation
+        title: Replace the running config
+
+  - title: Restore previous config.yaml
+    id: restore-config
+    icon: backup
+    shell: test -f /config/config.yaml.bak && cp /config/config.yaml.bak /config/config.yaml && echo "Restored config.yaml from config.yaml.bak" || echo "There is no config.yaml.bak yet"
+    onclick: execution-dialog
+    arguments:
+      - type: confirmation
+        title: Restore the previous config
+
+dashboards:
+  - title: Server
+    contents:
+      - title: Check disk space
+      - title: Check a website
+  - title: Settings
+    contents:
+      - title: Show config.yaml
+      - title: Replace config.yaml
+      - title: Restore previous config.yaml
