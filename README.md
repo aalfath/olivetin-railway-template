@@ -1,3 +1,5 @@
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/new/template/olivetin?utm_medium=integration&utm_source=button&utm_campaign=olivetin)
+
 # OliveTin on Railway
 
 This repo is the source of the **OliveTin** template on Railway's marketplace. [OliveTin](https://github.com/OliveTin/OliveTin) gives safe and simple access to predefined shell commands from a web interface: you write the commands in `config.yaml`, and people with access click a button to run them.

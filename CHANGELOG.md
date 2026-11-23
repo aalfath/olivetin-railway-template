@@ -4,6 +4,10 @@ Each entry is one version of this Railway template. Breaking changes come first.
 Updates reach deployed projects as Railway's "update available" notice when a
 change is merged to `main`; you choose when to apply it.
 
+## 3000.22.0-2 (2026-11-23)
+
+- README only: Deploy on Railway button linking to the published template (`olivetin`). No change to the running app.
+
 ## 3000.22.0-1 (2026-11-23)
 
 - First release: OliveTin 3000.22.0 (`ghcr.io/olivetin/olivetin:3000.22.0@sha256:e8441343ab8e3d13daa83f4cb2a00d9fa3510953a6040a556a805918f5636264`).
